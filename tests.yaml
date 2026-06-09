@@ -1,0 +1,135 @@
+- description: "t001"
+  vars:
+    ticket: "I was charged twice for my March subscription. Need a refund ASAP."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "billing"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t002"
+  vars:
+    ticket: "How do I change my display name in the profile settings?"
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "account"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t003"
+  vars:
+    ticket: "The export to CSV button does nothing when I click it."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "technical"
+    - type: javascript
+      value: JSON.parse(output).urgency === "medium"
+- description: "t004"
+  vars:
+    ticket: "It would be great if you could add dark mode to the mobile app."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "feature_request"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t005"
+  vars:
+    ticket: "Your product is a complete waste of money. Three weeks and nothing works. Cancelling."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "complaint"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t006"
+  vars:
+    ticket: "Cant log in - need to access invoices for my accountant today."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "account"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t007"
+  vars:
+    ticket: "Webhooks stopped firing 4 hours ago. Production is impacted."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "technical"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t008"
+  vars:
+    ticket: "Would you consider supporting Slack integration?"
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "feature_request"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t009"
+  vars:
+    ticket: "Charged in USD instead of EUR. My account currency is EUR."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "billing"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t010"
+  vars:
+    ticket: "Need to update my billing email - the previous one is no longer active."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "billing"
+    - type: javascript
+      value: JSON.parse(output).urgency === "medium"
+- description: "t011"
+  vars:
+    ticket: "I think maybe the price went up? Not sure, just noticed something on my statement."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "billing"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t012"
+  vars:
+    ticket: "Hi, loving the product! One small thing - the button color is a bit hard to see for me."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "complaint"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t013"
+  vars:
+    ticket: "We are a team of 200 people and nobody can access the system since this morning. This is critical."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "technical"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"
+- description: "t014"
+  vars:
+    ticket: "Just wondering if there is any documentation on the API rate limits?"
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "technical"
+    - type: javascript
+      value: JSON.parse(output).urgency === "low"
+- description: "t015"
+  vars:
+    ticket: "I want to cancel but also maybe not - depends on if you can fix the export bug I reported last month."
+  assert:
+    - type: is-json
+    - type: javascript
+      value: JSON.parse(output).category === "complaint"
+    - type: javascript
+      value: JSON.parse(output).urgency === "high"

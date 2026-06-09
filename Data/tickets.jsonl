@@ -1,0 +1,15 @@
+{"id": "t001", "ticket": "I was charged twice for my March subscription. Need a refund ASAP.", "category": "billing", "urgency": "high"}
+{"id": "t002", "ticket": "How do I change my display name in the profile settings?", "category": "account", "urgency": "low"}
+{"id": "t003", "ticket": "The export to CSV button does nothing when I click it.", "category": "technical", "urgency": "medium"}
+{"id": "t004", "ticket": "It would be great if you could add dark mode to the mobile app.", "category": "feature_request", "urgency": "low"}
+{"id": "t005", "ticket": "Your product is a complete waste of money. Three weeks and nothing works. Cancelling.", "category": "complaint", "urgency": "high"}
+{"id": "t006", "ticket": "Cant log in - need to access invoices for my accountant today.", "category": "account", "urgency": "high"}
+{"id": "t007", "ticket": "Webhooks stopped firing 4 hours ago. Production is impacted.", "category": "technical", "urgency": "high"}
+{"id": "t008", "ticket": "Would you consider supporting Slack integration?", "category": "feature_request", "urgency": "low"}
+{"id": "t009", "ticket": "Charged in USD instead of EUR. My account currency is EUR.", "category": "billing", "urgency": "high"}
+{"id": "t010", "ticket": "Need to update my billing email - the previous one is no longer active.", "category": "billing", "urgency": "medium"}
+{"id": "t011", "ticket": "I think maybe the price went up? Not sure, just noticed something on my statement.", "category": "billing", "urgency": "low"}
+{"id": "t012", "ticket": "Hi, loving the product! One small thing - the button color is a bit hard to see for me.", "category": "complaint", "urgency": "low"}
+{"id": "t013", "ticket": "We are a team of 200 people and nobody can access the system since this morning. This is critical.", "category": "technical", "urgency": "high"}
+{"id": "t014", "ticket": "Just wondering if there is any documentation on the API rate limits?", "category": "technical", "urgency": "low"}
+{"id": "t015", "ticket": "I want to cancel but also maybe not - depends on if you can fix the export bug I reported last month.", "category": "complaint", "urgency": "high"}

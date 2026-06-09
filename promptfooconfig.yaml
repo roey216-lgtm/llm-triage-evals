@@ -1,0 +1,14 @@
+description: "LLM Support Triage - v1"
+
+prompts:
+  - file://prompts/v1.txt
+  - file://prompts/v2.txt
+
+
+providers:
+  - id: anthropic:messages:claude-haiku-4-5
+    config:
+      max_tokens: 200
+      temperature: 0
+
+tests: file://tests.yaml
