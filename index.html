@@ -1,4 +1,3 @@
-$html = @'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,6 +129,21 @@ $html = @'
       color: #60a5fa;
     }
 
+    .confusion-matrix-container {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .confusion-matrix-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
     .error-item {
       background: #1e293b;
       border-left: 4px solid #f87171;
@@ -248,16 +262,6 @@ $html = @'
       font-size: 1.1em;
     }
 
-    .viz-placeholder {
-      background: #1e293b;
-      border: 2px dashed #475569;
-      padding: 40px;
-      margin: 30px 0;
-      border-radius: 8px;
-      text-align: center;
-      color: #94a3b8;
-    }
-
     .footer {
       text-align: center;
       padding: 40px 20px;
@@ -281,7 +285,8 @@ $html = @'
     }
 
     ul li {
-      margin: 8px 0;
+      margin: 12px 0;
+      color: #cbd5e1;
     }
 
     a {
@@ -316,7 +321,7 @@ $html = @'
   <div class="container">
     <div class="intro">
       <h1>LLM Support Triage Evaluator</h1>
-      <p>Hi, Hi, I'm Roey. I love building with LLMs, but I love measuring them even more. Since 'looks good to me' isn't a great evaluation strategy, I systematically tested 150 tricky support tickets to find out where the AI actually fails. Welcome to the messy reality of prompt engineering :) </p>
+      <p>Hi, I'm Roey. I love building with LLMs, but I love measuring them even more. Since "looks good to me" isn't a great evaluation strategy, I systematically tested 150 tricky support tickets to find out where the AI actually fails. Welcome to the messy reality of prompt engineering.</p>
     </div>
 
     <h2>Why I Built This</h2>
@@ -388,6 +393,16 @@ $html = @'
       <p>The interesting part: v2 is identical to v1. I added more rules, more examples, more guidance. Didn't help. Same score. This taught me that you hit diminishing returns fast with prompt engineering. After a certain point, better prompts don't move the needle. You need better data or a different model.</p>
     </div>
 
+    <h2>Confusion Matrix: Where the Model Breaks</h2>
+
+    <p>This shows which categories get confused with each other. The diagonal is where the model got it right. Off-diagonal is where it failed.</p>
+
+    <div class="confusion-matrix-container">
+      <img src="confusion_matrix.png" alt="Confusion Matrix showing v1 prompt performance">
+    </div>
+
+    <p><strong>Key pattern:</strong> Complaints get misclassified as feature requests. This is the polite tone problem. Billing vs Complaint confusion also appears. Billing issues are less likely to be confused because the language is more specific.</p>
+
     <h2>Where the Model Broke Down</h2>
 
     <div class="toggle-group">
@@ -414,4 +429,149 @@ $html = @'
         </div>
 
         <div class="explanation">
-          The model saw "Can we have a classic mode?" and stopped. Feature request. But the real message is "your redesign broke things." The positive opening ("I love your product") threw it off. This happens all the time. Customers are polite. They lead with the positive before the negative. The model needs to r
+          The model saw "Can we have a classic mode?" and stopped. Feature request. But the real message is "your redesign broke things." The positive opening ("I love your product") threw it off. This happens all the time. Customers are polite. They lead with the positive before the negative. The model needs to read between the lines.
+        </div>
+      </div>
+    </div>
+
+    <div id="urgency" class="section-content">
+      <div class="error-item">
+        <h4>The urgency overestimate</h4>
+        
+        <div class="ticket-text">
+          "Invoice discrepancy: line item shows incorrect quantity."
+        </div>
+
+        <div class="prediction-box">
+          <div class="expected">
+            <strong>Should be:</strong> Medium urgency
+          </div>
+          <div class="wrong">
+            <strong>Model said:</strong> High urgency
+          </div>
+        </div>
+
+        <div class="explanation">
+          The word "incorrect" triggered alarm bells. But this is a manual accounting fix, not a service outage. The model doesn't understand domain context. To billing, this is annoying but not critical. To support staff, it's a 10-minute correction. The opposite also happens: casual language about real issues gets marked low urgency.
+        </div>
+      </div>
+
+      <div class="error-item">
+        <h4>Competitive pressure gets ignored</h4>
+        
+        <div class="ticket-text">
+          "It would be really cool if you added a Slack integration. Many of our competitors have it."
+        </div>
+
+        <div class="prediction-box">
+          <div class="expected">
+            <strong>Should be:</strong> Medium urgency
+          </div>
+          <div class="wrong">
+            <strong>Model said:</strong> Low urgency
+          </div>
+        </div>
+
+        <div class="explanation">
+          "Many of our competitors have it" is a churn signal. That's urgent. But the polite framing ("would be really cool") makes it sound casual. The model reads tone, not subtext. A feature request about competitors is a threat indicator, but casual language buried that signal.
+        </div>
+      </div>
+    </div>
+
+    <div id="mixed" class="section-content">
+      <div class="error-item">
+        <h4>Complaint or feature request? Both.</h4>
+        
+        <div class="ticket-text">
+          "Your support is helpful but slow. We're paying for premium and still wait 24 hours for responses."
+        </div>
+
+        <div class="prediction-box">
+          <div class="expected">
+            <strong>Should be:</strong> Complaint
+          </div>
+          <div class="wrong">
+            <strong>Model said:</strong> Sometimes feature request
+          </div>
+        </div>
+
+        <div class="explanation">
+          This one is genuinely ambiguous. The customer could be asking for faster support (feature request) or expressing frustration (complaint). Context matters here: they're a premium customer. Premium customers expressing frustration is a complaint, not a feature idea. The model doesn't know context.
+        </div>
+      </div>
+    </div>
+
+    <h2>What This Revealed</h2>
+
+    <p><strong>1. Measurement beats intuition.</strong> I thought I understood the problem by testing a few examples. The 150-case eval showed me I was wrong. Edge cases tell the real story.</p>
+
+    <p><strong>2. Prompt improvements plateau fast.</strong> v0 to v1 helped (69% to 70.67%). v1 to v2 didn't. Adding more rules actually hurts sometimes because you're creating new failure modes. You can't engineer your way past bad data.</p>
+
+    <p><strong>3. Your evaluation method matters as much as your model.</strong> Halfway through I realized the eval was failing on valid JSON wrapped in markdown. Fixing that evaluation boosted results 20 points. A broken eval tells you nothing.</p>
+
+    <p><strong>4. Real failures are about context, not stupidity.</strong> The model isn't dumb. It's missing domain knowledge, tone understanding, and business context. That's harder to fix than you'd think.</p>
+
+    <h2>The Business Side</h2>
+
+    <div class="business-emphasis">
+      <p>Here's what this means in real money. A support team handles 10,000 tickets a month. This system gets 70% right. That's 7,000 tickets routed correctly without human intervention.</p>
+
+      <p>At 5 minutes per ticket for human triage, you save 583 hours a month. At $25/hour for support staff, that's <strong>$14,575 per month saved</strong>. Or <strong>$175,000 per year.</strong></p>
+
+      <p>The 30% that still need human review? That's the feature. Your team spends time on hard problems, not routing. With this system, a small team can handle 2 to 3 times the ticket volume without hiring more people.</p>
+    </div>
+
+    <h2>How This Actually Works</h2>
+
+    <p>This isn't a website you run manually. In production, it lives in your automation layer. A ticket comes in to Zendesk or Intercom. A webhook fires. n8n automation picks it up, sends the ticket text to Claude, gets back a category and urgency. The ticket gets tagged and routed automatically. The whole thing costs pennies per ticket.</p>
+
+    <p>The evaluation I did here is the proof of concept. This is what you do before deployment. Test 150 cases. Find patterns. Fix prompt. Test again. Once you hit 70%+ accuracy, you're ready to deploy to production.</p>
+
+    <h2>What's Next</h2>
+
+    <p>This isn't the end state. It's the proof of concept. Here's what actually matters next:</p>
+
+    <ul>
+      <li><strong>Test Heavier Models:</strong> Run the exact same eval against Claude Sonnet or GPT-4o to see if the 70% ceiling is a prompt issue or a model reasoning limit. Haiku is fast and cheap, but if Sonnet hits 85%+, that's your bottleneck.</li>
+      
+      <li><strong>Dynamic Examples (RAG):</strong> Instead of forcing static rules into the prompt, use a vector database to dynamically pull 2-3 similar historical tickets into the prompt context at runtime. The model can learn from actual examples instead of generic rules.</li>
+      
+      <li><strong>Strict JSON Schemas:</strong> Force native structured outputs at the API level to completely eliminate the markdown parsing errors found in the current pipeline. Claude's native JSON mode removes the format friction entirely.</li>
+      
+      <li><strong>Confidence Scoring:</strong> Add a confidence score to each prediction. Route low-confidence cases to humans automatically. This turns 70% accuracy into 90%+ when you account for cases the model knows it's uncertain about.</li>
+      
+      <li><strong>Human Agreement Study:</strong> Have 2-3 humans label the same 150 tickets independently. If human agreement is only 75%, the task is genuinely hard and 70% is actually good. If it's 95%, we have a lot of room to improve.</li>
+    </ul>
+
+    <h2>Code & Reproducibility</h2>
+
+    <p>Everything is on GitHub. Open source. You can run the eval yourself.</p>
+    <ul style="margin-left: 20px; margin-top: 15px;">
+      <li><strong>Repo:</strong> <a href="https://github.com/roey216-lgtm/llm-triage-evals">roey216-lgtm/llm-triage-evals</a></li>
+      <li><strong>Stack:</strong> Promptfoo, Claude Haiku, Python</li>
+      <li><strong>Dataset:</strong> 150 labeled support tickets, balanced across categories</li>
+      <li><strong>Includes:</strong> prompts, dataset, eval config, raw results</li>
+    </ul>
+
+    <div class="footer">
+      <p>Built by Roey Levi | Data Analyst & LLM Systems</p>
+      <p><a href="https://linkedin.com/in/roeylev">LinkedIn</a> | <a href="https://github.com/roey216-lgtm">GitHub</a></p>
+    </div>
+  </div>
+
+  <script>
+    function toggleError(section) {
+      document.querySelectorAll('.section-content').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(section).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
