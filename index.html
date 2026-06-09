@@ -481,7 +481,17 @@
     <div class="insight">
       <strong>4. Real failures are messier than you expect.</strong> Most failures aren't "model was dumb." They're things like: polite language obscuring urgency, or the boundary between complaint and feature request being genuinely ambiguous. That's the interesting stuff.
     </div>
+<h2>Business Impact</h2>
 
+    <p>Let's talk about what this actually means for a company. If a support team gets 10,000 tickets per month and this system correctly routes 70% of them, that's 7,000 tickets handled right without needing a human to decide where they go. At 5 minutes per ticket for manual triage, that's 583 hours saved every month. At $25 per hour for support staff, that's about $14,575 saved each month, or $175,000 per year. And that's just the triage cost. You also reduce customer wait time because tickets get to the right team faster.</p>
+
+    <p>The remaining 30% of tickets still need human review, but that's actually good. The system caught the easy ones and handed off the hard ones. Your support team spends their time on complex issues instead of routing tickets. At 70% accuracy with a small team, you could handle 2 to 3 times the ticket volume without hiring more people.</p>
+
+    <h2>How It Works in Production</h2>
+
+    <p>In a real company, this doesn't run as a website. It runs as part of your support workflow. A ticket comes in to Zendesk or Intercom. A webhook triggers an n8n automation. The automation pulls the ticket text, calls the Claude API with the triage prompt, gets back a category and urgency. The system tags the ticket and routes it to the right queue in seconds. No human waiting for routing decisions. The whole thing costs pennies per ticket to run.</p>
+
+    <p>The evaluation I did here is exactly what you'd do before putting it in production. You'd test 150 cases, find failure patterns, fix the prompt, and test again. Once you hit 70%+ accuracy, you deploy it. This project shows that process from start to finish.</p>
     <h2>Code & Reproducibility</h2>
 
     <p>Everything is open source and reproducible:</p>
