@@ -1,92 +1,90 @@
-# LLM Support Triage Evals
+# LLM Support Triage Evaluator
 
-## What is this?
+A systematic evaluation of LLM prompt engineering for support ticket classification. Tests 150 labeled tickets across 3 prompt versions to understand where AI fails and why.
 
-This project builds an automated evaluation framework for an LLM-based customer support ticket classifier.
+## The Problem
 
-The classifier takes a support ticket written by a real customer and returns two things:
-- The **category** of the issue (billing, technical, account, feature request, or complaint)
-- The **urgency** level (low, medium, or high)
+Most teams ship LLM features based on "it looks good to me" testing. This project demonstrates what actually happens when you measure instead of guess.
 
-The goal is not just to build the classifier — it is to measure how accurate it is, find where it fails, fix it, and prove the fix worked.
+## What's Inside
 
-## Why does this matter?
-
-Every company using LLMs in production faces the same problem: how do you know if your AI is actually working correctly?
-
-Most teams test their prompts manually. They try a few examples, it looks good, and they ship it. The problem is that manual testing misses edge cases, and edge cases in support ticket routing mean real customers get ignored, misrouted, or delayed.
-
-This project demonstrates a professional alternative: **eval-driven development**. Instead of guessing, you define what correct looks like, measure it automatically on every version, and let the data tell you when something breaks.
-
-## The problem I set out to solve
-
-I designed 15 realistic support tickets covering a wide range of situations — from straightforward billing refunds to ambiguous edge cases like a customer who is politely complaining but sounds like they are making a feature request, or a customer who wants to cancel but buries the churn signal inside a bug report.
-
-These edge cases are exactly where LLMs fail silently. Without evals, you would never know.
-
-## How it works
-
-**Step 1 : Define the dataset**
-15 synthetic tickets, each with a known correct category and urgency. These cover simple cases and hard edge cases deliberately.
-
-**Step 2 : Write the first prompt (v1)**
-A basic prompt that tells Claude what the categories and urgency levels are and asks it to return a JSON object.
-
-**Step 3 : Run the eval**
-Promptfoo sends each ticket to Claude and automatically checks whether the output matches the expected answer. Every test either passes or fails.
-
-**Step 4 : Analyze the failures**
-v1 scored 86.67% (13 out of 15 correct). Two tickets failed. Looking at the failures revealed two systematic problems with how the prompt was written.
-
-**Step 5 : Improve the prompt (v2)**
-Based on the failure analysis, v2 added explicit category definitions, an urgency rubric, and two specific rules targeting the failure patterns found in step 4.
-
-**Step 6 : Compare v1 vs v2 side by side**
-Promptfoo runs both prompts on all 15 tickets simultaneously and shows a side-by-side comparison. v2 fixed both failures from v1. It also introduced 2 new misclassifications on tickets v1 handled correctly , which is itself an important finding.
-
-## What the failures revealed
-
-**Failure 1 : Polite complaints misclassified as feature requests**
-
-Ticket: "Hi, loving the product! One small thing - the button color is a bit hard to see for me."
-
-v1 answered: `feature_request`
-Correct answer: `complaint`
-
-The model focused on the polite tone and the word "small thing" and treated it as a feature request. The fix was adding an explicit rule: politely worded dissatisfaction is still a complaint, not a feature request.
-
-**Failure 2 : Churn signals hidden inside bug reports**
-
-Ticket: "I want to cancel but also maybe not , depends on if you can fix the export bug I reported last month."
-
-v1 answered: `technical`
-Correct answer: `complaint`
-
-The model latched onto the word "bug" and missed the cancellation threat entirely. The fix was adding a rule: if a customer mentions cancelling, classify as complaint regardless of other content.
-
-**Key insight**
-
-Fixing the two complaint failures in v2 caused two regressions on other tickets. This is a real pattern in LLM development, prompt changes have side effects. The only way to catch regressions reliably is to run evals on every change. This is exactly what this framework makes possible.
+- **150 labeled support tickets** across 5 categories (billing, technical, account, feature_request, complaint)
+- **3 prompt versions** tested systematically (v0: definitions only, v1: with examples, v2: with rules and rubric)
+- **Confusion matrix** showing exactly which categories get confused
+- **Error analysis** with real examples of where the model fails
+- **Business impact calculation** ($175k/year savings at 70% accuracy)
 
 ## Results
 
-| Version | Pass rate | Notes |
-|---|---|---|
-| v1 — naive prompt | 86.67% (13/15) | Failed on edge cases involving tone and mixed signals |
-| v2 — improved prompt | 86.67% (13/15) | Fixed 2 failures from v1, introduced 2 new ones elsewhere |
+| Version | Accuracy | Passed | Key Finding |
+|---------|----------|--------|------------|
+| v0: Definitions only | 69.33% | 52/75 | Too minimal, needs examples |
+| v1: Added examples | 70.67% | 53/75 | Marginal improvement |
+| v2: Expert mode | 70.67% | 53/75 | No improvement, same as v1 |
+
+**Key insight:** Prompt improvements plateau fast. v0 to v1 helped. v1 to v2 didn't. You can't engineer your way past bad data.
+
+### Steps
+
+1. **Generate confusion matrix:**
+Creates `confusion_matrix.png`
+
+2. **Run the evaluation:**
+Tests all 150 tickets against v0, v1, v2 prompts
+
+3. **View results:**
+### Files
+- `Data/tickets.jsonl` - 150 labeled support tickets
+- `prompts/v0.txt` - Zero-shot baseline
+- `prompts/v1.txt` - With examples
+- `prompts/v2.txt` - With rules and rubric
+- `promptfooconfig.yaml` - Evaluation configuration
+- `gen_confusion.py` - Generates confusion matrix visualization
+- `tests.yaml` - Auto-generated test cases (150 tickets × 3 prompts)
+
+## Key Findings
+
+### 1. Polite Criticism Gets Misclassified
+Tickets like "I love it but the UI redesign made things harder" get classified as feature requests instead of complaints. The model reads the feature request part, misses the dissatisfaction.
+
+### 2. Urgency is Context-Dependent
+Billing discrepancies trigger "high urgency" when they're really "medium" (manual accounting fix, not service outage). The model doesn't understand domain context.
+
+### 3. Competitive Pressure Gets Buried
+"Many of our competitors have this feature" is a churn signal, but polite framing ("would be really cool") makes it sound low priority.
+
+### 4. Evaluation Methodology Matters
+Halfway through, we discovered the eval was failing on valid JSON wrapped in markdown code blocks. Fixing the evaluator alone boosted results 20 points. A broken eval tells you nothing.
+
+## Business Impact
+
+At 10,000 tickets/month with 70% accuracy:
+- 7,000 tickets routed correctly without human intervention
+- 583 hours saved per month
+- $14,575/month in support staff savings
+- $175,000/year
+
+A small team can handle 2-3x the ticket volume without hiring.
+
+## What's Next
+
+1. **Test Heavier Models:** Run the same eval against Claude Sonnet or GPT-4o. Is 70% a prompt limit or a model limit?
+2. **Dynamic Examples (RAG):** Use vector database to pull similar tickets at runtime instead of static rules
+3. **Strict JSON Schemas:** Use Claude's native JSON mode to eliminate markdown parsing issues
+4. **Confidence Scoring:** Route uncertain predictions to humans automatically
+5. **Human Agreement Study:** Have 2-3 humans label the same 150 tickets to establish a baseline
 
 ## Stack
 
-- [Promptfoo](https://promptfoo.dev) — open source eval framework
-- Anthropic Claude Haiku — the LLM being evaluated
-- Python : dataset and test case generation
+- **Evaluation:** Promptfoo + Claude Haiku
+- **Data:** 150 manually labeled tickets
+- **Visualization:** Matplotlib + Seaborn
+- **Reproducibility:** Python, YAML configs, open source
 
-## How to run it yourself
+## Key Insight
 
-```bash
-npm install -g promptfoo
-git clone https://github.com/roey216-lgtm/llm-triage-evals.git
-cd llm-triage-evals
-```
+The most important discovery wasn't about prompts. It was that **you can't know if something improved without measuring it**. v2 felt better (more rules, more guidance), but it performed identically to v1 on 150 real cases. Measurement beats intuition.
 
-Add your Anthropic API key to a `.env` file:
+---
+
+Built by Roey Levi | [LinkedIn](https://linkedin.com/in/roeylev) | [GitHub](https://github.com/roey216-lgtm)
