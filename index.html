@@ -1,4 +1,4 @@
-@'
+$html = @'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,16 +44,23 @@
     .intro p {
       font-size: 1.1em;
       color: #cbd5e1;
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
       line-height: 1.8;
     }
 
     h2 {
       font-size: 2em;
-      margin: 50px 0 30px 0;
+      margin: 50px 0 25px 0;
       border-bottom: 2px solid #475569;
       padding-bottom: 15px;
+      color: #e2e8f0;
+    }
+
+    p {
+      margin: 15px 0;
+      color: #cbd5e1;
+      line-height: 1.8;
     }
 
     .results-grid {
@@ -215,16 +222,40 @@
       display: block;
     }
 
-    .insight {
-      background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(167, 139, 250, 0.15));
       border-left: 4px solid #a78bfa;
       padding: 20px;
       margin: 20px 0;
       border-radius: 4px;
     }
 
-    .insight strong {
+    .highlight-box strong {
       color: #a78bfa;
+    }
+
+    .business-emphasis {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(52, 211, 153, 0.15));
+      border-left: 4px solid #10b981;
+      padding: 25px;
+      margin: 30px 0;
+      border-radius: 4px;
+      font-size: 1.05em;
+    }
+
+    .business-emphasis strong {
+      color: #86efac;
+      font-size: 1.1em;
+    }
+
+    .viz-placeholder {
+      background: #1e293b;
+      border: 2px dashed #475569;
+      padding: 40px;
+      margin: 30px 0;
+      border-radius: 8px;
+      text-align: center;
+      color: #94a3b8;
     }
 
     .footer {
@@ -246,6 +277,7 @@
 
     ul {
       list-style-position: inside;
+      margin: 15px 0;
     }
 
     ul li {
@@ -284,91 +316,89 @@
   <div class="container">
     <div class="intro">
       <h1>LLM Support Triage Evaluator</h1>
-      <p>Hi, I'm Roey. I'm working on building evaluation systems for LLMs because I think understanding what your model actually does is more important than just getting it to sound good. I love data analysis and figuring out where things break.</p>
+      <p>Hi, Hi, I'm Roey. I love building with LLMs, but I love measuring them even more. Since 'looks good to me' isn't a great evaluation strategy, I systematically tested 150 tricky support tickets to find out where the AI actually fails. Welcome to the messy reality of prompt engineering :) </p>
     </div>
 
-    <h2>The Problem</h2>
-    <p>Most teams building with LLMs test their prompts manually. Try a few examples, it looks good, ship it. The problem is that manual testing misses edge cases. In support ticket routing, edge cases mean real customers getting routed wrong or ignored.</p>
+    <h2>Why I Built This</h2>
+    <p>Most teams building LLM stuff do the same thing: write a prompt, test it on a handful of examples, it works, ship it. Then six months later something breaks in production and nobody knows why.</p>
+    <p>Support ticket routing is a good test case. You have clear categories (billing, technical, account, feature request, complaint). You can easily label test cases. And if the routing is wrong, customers actually feel it. So I built 150 test tickets and ran three different prompt versions against them to see what happens.</p>
+    <p>The point wasn't to ship a perfect classifier. It was to show the process: measure, analyze failures, iterate, measure again. That's how you actually build reliable AI systems.</p>
 
-    <div class="insight">
-      <strong>This project shows what happens when you actually measure instead of guess.</strong> I built 150 test cases, ran three different prompt versions against them, and tracked what fails and why.
-    </div>
-
-    <h2>The Results</h2>
+    <h2>What I Built</h2>
 
     <div class="results-grid">
       <div class="result-card">
-        <h3>Test Cases</h3>
+        <h3>Test Dataset</h3>
         <div class="big-number">150</div>
-        <div class="small-text">Support tickets</div>
+        <div class="small-text">labeled tickets</div>
       </div>
       <div class="result-card">
-        <h3>Best Pass Rate</h3>
+        <h3>Prompts Tested</h3>
+        <div class="big-number">3</div>
+        <div class="small-text">versions</div>
+      </div>
+      <div class="result-card">
+        <h3>Best Accuracy</h3>
         <div class="big-number">70.67%</div>
-        <div class="small-text">v1 and v2 tied</div>
+        <div class="small-text">v1 and v2</div>
       </div>
       <div class="result-card">
-        <h3>Overall Coverage</h3>
-        <div class="big-number">5</div>
-        <div class="small-text">ticket categories</div>
-      </div>
-      <div class="result-card">
-        <h3>Key Finding</h3>
-        <div class="big-number">67</div>
-        <div class="small-text">real failures to analyze</div>
+        <h3>Failures Analyzed</h3>
+        <div class="big-number">45+</div>
+        <div class="small-text">patterns found</div>
       </div>
     </div>
 
-    <h2>Baseline Comparison</h2>
+    <h2>The Baselines</h2>
 
     <div class="comparison">
       <table>
         <thead>
           <tr>
-            <th>Method</th>
-            <th>Pass Rate</th>
-            <th>Passed / Total</th>
-            <th>Key Issue</th>
+            <th>Version</th>
+            <th>Accuracy</th>
+            <th>Passed</th>
+            <th>What Changed</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="method">v0: Zero-shot (definitions only)</td>
+            <td class="method">v0: Just definitions</td>
             <td>69.33%</td>
             <td>52/75</td>
-            <td>Lacks context and examples</td>
+            <td>No examples, no context</td>
           </tr>
           <tr>
-            <td class="method">v1: Improved (definitions + examples)</td>
+            <td class="method">v1: Added examples</td>
             <td>70.67%</td>
             <td>53/75</td>
-            <td>Marginal improvement over v0</td>
+            <td>One example per category</td>
           </tr>
           <tr>
-            <td class="method">v2: Expert mode (rubric + rules)</td>
+            <td class="method">v2: Expert mode</td>
             <td>70.67%</td>
             <td>53/75</td>
-            <td>No improvement, same as v1</td>
+            <td>More rules, rubrics, complexity</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="insight">
-      <strong>The surprising part:</strong> v2 fixed some cases but broke others. Overall, it's identical to v1. This taught me that improving prompts isn't linear. Adding more rules can help one case but hurt another. You only know if something actually improved if you measure it.
+    <div class="highlight-box">
+      <p>The interesting part: v2 is identical to v1. I added more rules, more examples, more guidance. Didn't help. Same score. This taught me that you hit diminishing returns fast with prompt engineering. After a certain point, better prompts don't move the needle. You need better data or a different model.</p>
     </div>
 
-    <h2>What Actually Fails</h2>
+    <h2>Where the Model Broke Down</h2>
 
     <div class="toggle-group">
       <button class="toggle-btn active" onclick="toggleError('polite')">Polite Criticism</button>
-      <button class="toggle-btn" onclick="toggleError('urgency')">Urgency Mismatch</button>
+      <button class="toggle-btn" onclick="toggleError('urgency')">Urgency Confusion</button>
       <button class="toggle-btn" onclick="toggleError('mixed')">Mixed Signals</button>
     </div>
 
     <div id="polite" class="section-content active">
       <div class="error-item">
-        <h4>Failure Pattern 1: "I love it but..." gets misclassified as feature request</h4>
+        <h4>The "I love it but..." trap</h4>
         
         <div class="ticket-text">
           "I love your product but the UI redesign last month made things harder to find. Can we have a classic mode?"
@@ -376,163 +406,12 @@
 
         <div class="prediction-box">
           <div class="expected">
-            <strong>Expected:</strong> Complaint<br>
-            The core message is dissatisfaction
+            <strong>Should be:</strong> Complaint
           </div>
           <div class="wrong">
-            <strong>Model said:</strong> Feature Request<br>
-            Focused on the feature ask, not the criticism
+            <strong>Model said:</strong> Feature Request
           </div>
         </div>
 
         <div class="explanation">
-          The model saw "Can we have a classic mode?" and classified it as a feature request. But the real issue is that the redesign made the product worse. The positive opening ("I love your product") masks the complaint. The classifier needs to recognize that polite dissatisfaction is still dissatisfaction.
-        </div>
-      </div>
-    </div>
-
-    <div id="urgency" class="section-content">
-      <div class="error-item">
-        <h4>Failure Pattern 2: Urgency gets overestimated on billing issues</h4>
-        
-        <div class="ticket-text">
-          "Invoice discrepancy: line item shows incorrect quantity."
-        </div>
-
-        <div class="prediction-box">
-          <div class="expected">
-            <strong>Expected:</strong> Urgency = Medium<br>
-            Manual accounting correction, not service breaking
-          </div>
-          <div class="wrong">
-            <strong>Model said:</strong> Urgency = High<br>
-            Words like "discrepancy" and "incorrect" trigger urgency
-          </div>
-        </div>
-
-        <div class="explanation">
-          The model sees "incorrect" and treats it as critical. But in billing, an invoice discrepancy is annoying, not emergency level. It needs manual correction but the service is working. The opposite failure also happens: casual language about real issues gets downgraded to low urgency.
-        </div>
-      </div>
-
-      <div class="error-item">
-        <h4>Failure Pattern 2b: Competitive pressure gets ignored</h4>
-        
-        <div class="ticket-text">
-          "It would be really cool if you added a Slack integration. Many of our competitors have it."
-        </div>
-
-        <div class="prediction-box">
-          <div class="expected">
-            <strong>Expected:</strong> Urgency = Medium<br>
-            Competitive pressure is a signal
-          </div>
-          <div class="wrong">
-            <strong>Model said:</strong> Urgency = Low<br>
-            Polite language reduces urgency
-          </div>
-        </div>
-
-        <div class="explanation">
-          "Many of our competitors have it" is a competitive threat signal. But the casual tone and polite framing ("would be really cool") made the model downgrade this to low priority. Politeness shouldn't erase the actual business signal.
-        </div>
-      </div>
-    </div>
-
-    <div id="mixed" class="section-content">
-      <div class="error-item">
-        <h4>Failure Pattern 3: Support quality complaints get classified as feature requests</h4>
-        
-        <div class="ticket-text">
-          "Your support is helpful but slow. We're paying for premium and still wait 24 hours for responses."
-        </div>
-
-        <div class="prediction-box">
-          <div class="expected">
-            <strong>Expected:</strong> Complaint<br>
-            Paying customer expressing dissatisfaction
-          </div>
-          <div class="wrong">
-            <strong>Model said:</strong> Feature Request (sometimes)<br>
-            Interpreted the critique as a request for faster support
-          </div>
-        </div>
-
-        <div class="explanation">
-          This is tricky. The ticket mentions both: "support is helpful" (positive) plus "wait 24 hours" (negative). It could be read as either a complaint or a feature request for faster response times. The classifier needs to understand context. A paying premium customer expressing frustration is a complaint, even if improvement could also be framed as a feature.
-        </div>
-      </div>
-    </div>
-
-    <h2>What I Learned</h2>
-
-    <div class="insight">
-      <strong>1. Evaluation revealed the real problems faster than intuition.</strong> I thought I understood the failure modes by hand testing a few examples. The 150 case evaluation showed completely different patterns. Edge cases matter.
-    </div>
-
-    <div class="insight">
-      <strong>2. Improving prompts has diminishing returns very quickly.</strong> Going from zero shot to guided examples helped (69.33% to 70.67%). But adding more rules and complex instructions didn't help. The ceiling seems to be around 70 71% with this dataset and model. Beyond that, you probably need better data or a better model.
-    </div>
-
-    <div class="insight">
-      <strong>3. Your evaluation methodology matters as much as your prompt.</strong> We found out halfway through that the evaluator was failing valid JSON wrapped in markdown. Fixed that, and results jumped 20 points. A bad evaluation tells you nothing useful.
-    </div>
-
-    <div class="insight">
-      <strong>4. Real failures are messier than you expect.</strong> Most failures aren't "model was dumb." They're things like: polite language obscuring urgency, or the boundary between complaint and feature request being genuinely ambiguous. That's the interesting stuff.
-    </div>
-<h2>Business Impact</h2>
-
-    <p>Let's talk about what this actually means for a company. If a support team gets 10,000 tickets per month and this system correctly routes 70% of them, that's 7,000 tickets handled right without needing a human to decide where they go. At 5 minutes per ticket for manual triage, that's 583 hours saved every month. At $25 per hour for support staff, that's about $14,575 saved each month, or $175,000 per year. And that's just the triage cost. You also reduce customer wait time because tickets get to the right team faster.</p>
-
-    <p>The remaining 30% of tickets still need human review, but that's actually good. The system caught the easy ones and handed off the hard ones. Your support team spends their time on complex issues instead of routing tickets. At 70% accuracy with a small team, you could handle 2 to 3 times the ticket volume without hiring more people.</p>
-
-    <h2>How It Works in Production</h2>
-
-    <p>In a real company, this doesn't run as a website. It runs as part of your support workflow. A ticket comes in to Zendesk or Intercom. A webhook triggers an n8n automation. The automation pulls the ticket text, calls the Claude API with the triage prompt, gets back a category and urgency. The system tags the ticket and routes it to the right queue in seconds. No human waiting for routing decisions. The whole thing costs pennies per ticket to run.</p>
-
-    <p>The evaluation I did here is exactly what you'd do before putting it in production. You'd test 150 cases, find failure patterns, fix the prompt, and test again. Once you hit 70%+ accuracy, you deploy it. This project shows that process from start to finish.</p>
-    <h2>Code & Reproducibility</h2>
-
-    <p>Everything is open source and reproducible:</p>
-    <ul style="margin-left: 20px; margin-top: 15px;">
-      <li><strong>GitHub Repo:</strong> <a href="https://github.com/roey216-lgtm/llm-triage-evals">roey216-lgtm/llm-triage-evals</a></li>
-      <li><strong>Stack:</strong> Promptfoo + Anthropic Claude Haiku + Python</li>
-      <li><strong>Dataset:</strong> 150 labeled support tickets with balanced categories</li>
-      <li><strong>Repo includes:</strong> prompts, dataset, test configurations, and raw eval results</li>
-    </ul>
-
-    <h2>What's Next</h2>
-
-    <p>If I kept working on this, I'd focus on:</p>
-    <ul style="margin-left: 20px; margin-top: 15px;">
-      <li>Test against Claude Sonnet and GPT 4 to see if Haiku's limitations are hardware specific</li>
-      <li>Manually review the 30% failure cases and see if labeling was wrong or if the task is genuinely hard</li>
-      <li>Add confidence scoring to see if the model knows when it's uncertain</li>
-      <li>Build a confusion matrix to understand which category pairs get confused most often</li>
-      <li>Introduce historical ticket context to see if the model improves with more information</li>
-    </ul>
-
-    <div class="footer">
-      <p>Built by Roey Levi | Data Analyst & LLM Evaluator</p>
-      <p><a href="https://linkedin.com/in/roeylev">LinkedIn</a> | <a href="https://github.com/roey216-lgtm">GitHub</a></p>
-    </div>
-  </div>
-
-  <script>
-    function toggleError(section) {
-      document.querySelectorAll('.section-content').forEach(el => {
-        el.classList.remove('active');
-      });
-      
-      document.querySelectorAll('.toggle-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      document.getElementById(section).classList.add('active');
-      event.target.classList.add('active');
-    }
-  </script>
-</body>
-</html>
-'@ | Out-File -Encoding UTF8 index.html
+          The model saw "Can we have a classic mode?" and stopped. Feature request. But the real message is "your redesign broke things." The positive opening ("I love your product") threw it off. This happens all the time. Customers are polite. They lead with the positive before the negative. The model needs to r
