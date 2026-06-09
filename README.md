@@ -26,27 +26,27 @@ These edge cases are exactly where LLMs fail silently. Without evals, you would 
 
 ## How it works
 
-**Step 1 — Define the dataset**
+**Step 1 : Define the dataset**
 15 synthetic tickets, each with a known correct category and urgency. These cover simple cases and hard edge cases deliberately.
 
-**Step 2 — Write the first prompt (v1)**
+**Step 2 : Write the first prompt (v1)**
 A basic prompt that tells Claude what the categories and urgency levels are and asks it to return a JSON object.
 
-**Step 3 — Run the eval**
+**Step 3 : Run the eval**
 Promptfoo sends each ticket to Claude and automatically checks whether the output matches the expected answer. Every test either passes or fails.
 
-**Step 4 — Analyze the failures**
+**Step 4 : Analyze the failures**
 v1 scored 86.67% (13 out of 15 correct). Two tickets failed. Looking at the failures revealed two systematic problems with how the prompt was written.
 
-**Step 5 — Improve the prompt (v2)**
+**Step 5 : Improve the prompt (v2)**
 Based on the failure analysis, v2 added explicit category definitions, an urgency rubric, and two specific rules targeting the failure patterns found in step 4.
 
-**Step 6 — Compare v1 vs v2 side by side**
-Promptfoo runs both prompts on all 15 tickets simultaneously and shows a side-by-side comparison. v2 fixed both failures from v1. It also introduced 2 new misclassifications on tickets v1 handled correctly — which is itself an important finding.
+**Step 6 : Compare v1 vs v2 side by side**
+Promptfoo runs both prompts on all 15 tickets simultaneously and shows a side-by-side comparison. v2 fixed both failures from v1. It also introduced 2 new misclassifications on tickets v1 handled correctly , which is itself an important finding.
 
 ## What the failures revealed
 
-**Failure 1 — Polite complaints misclassified as feature requests**
+**Failure 1 : Polite complaints misclassified as feature requests**
 
 Ticket: "Hi, loving the product! One small thing - the button color is a bit hard to see for me."
 
@@ -55,9 +55,9 @@ Correct answer: `complaint`
 
 The model focused on the polite tone and the word "small thing" and treated it as a feature request. The fix was adding an explicit rule: politely worded dissatisfaction is still a complaint, not a feature request.
 
-**Failure 2 — Churn signals hidden inside bug reports**
+**Failure 2 : Churn signals hidden inside bug reports**
 
-Ticket: "I want to cancel but also maybe not - depends on if you can fix the export bug I reported last month."
+Ticket: "I want to cancel but also maybe not , depends on if you can fix the export bug I reported last month."
 
 v1 answered: `technical`
 Correct answer: `complaint`
@@ -66,7 +66,7 @@ The model latched onto the word "bug" and missed the cancellation threat entirel
 
 **Key insight**
 
-Fixing the two complaint failures in v2 caused two regressions on other tickets. This is a real pattern in LLM development — prompt changes have side effects. The only way to catch regressions reliably is to run evals on every change. This is exactly what this framework makes possible.
+Fixing the two complaint failures in v2 caused two regressions on other tickets. This is a real pattern in LLM development, prompt changes have side effects. The only way to catch regressions reliably is to run evals on every change. This is exactly what this framework makes possible.
 
 ## Results
 
@@ -79,7 +79,7 @@ Fixing the two complaint failures in v2 caused two regressions on other tickets.
 
 - [Promptfoo](https://promptfoo.dev) — open source eval framework
 - Anthropic Claude Haiku — the LLM being evaluated
-- Python — dataset and test case generation
+- Python : dataset and test case generation
 
 ## How to run it yourself
 
